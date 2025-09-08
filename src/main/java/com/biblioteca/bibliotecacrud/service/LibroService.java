@@ -1,7 +1,9 @@
 package com.biblioteca.bibliotecacrud.service;
 
 import com.biblioteca.bibliotecacrud.entity.Libro;
+import com.biblioteca.bibliotecacrud.exception.EntityNotFoundException;
 import com.biblioteca.bibliotecacrud.repository.ILibroRepo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -10,11 +12,15 @@ import java.util.Optional;
 
 @Service
 public class LibroService {
-
+    @Autowired
     private ILibroRepo repo;
 
     public List<Libro> Listar() {
         return repo.findAll();
+    }
+
+    public List<Libro> Listar(String nombresAutor) {
+        return repo.buscarPorAutor(nombresAutor);
     }
 
     public Libro guardar(Libro libro){
@@ -36,8 +42,12 @@ public class LibroService {
         return repo.save(libroBody);
     }
 
-    public Optional<Libro> obtenerUno(Long id) {
-        return repo.findById(id);
+    public Libro obtenerUno(Long id) {
+        Libro libro = repo.findById(id).orElse(null);
+        if (libro == null) {
+            throw new EntityNotFoundException("Id no encontrado " + id);
+        }
+        return libro;
     }
 
     public void eliminar(Long id) {

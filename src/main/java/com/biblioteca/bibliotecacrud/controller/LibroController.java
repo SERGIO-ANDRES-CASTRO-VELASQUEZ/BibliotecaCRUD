@@ -1,7 +1,9 @@
 package com.biblioteca.bibliotecacrud.controller;
 
 import com.biblioteca.bibliotecacrud.entity.Libro;
+import com.biblioteca.bibliotecacrud.exception.EntityNotFoundException;
 import com.biblioteca.bibliotecacrud.service.LibroService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -14,9 +16,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping("api/biblioteca")
 public class LibroController {
+    @Autowired
     private LibroService service;
-
-
     // ------------------- METODOS CRUD -------------------
 
     @GetMapping
@@ -24,8 +25,13 @@ public class LibroController {
         return service.Listar();
     }
 
+    @GetMapping("autor")
+    public List<Libro> Listar(@RequestParam("nombres") String nombresAutor){
+        return service.Listar(nombresAutor);
+    }
+
     @GetMapping("/{id}")
-    public Optional<Libro> obtenerUnoPorId(@PathVariable Long id) {
+    public Libro obtenerUnoPorId(@PathVariable Long id) {
         return service.obtenerUno(id);
     }
 
